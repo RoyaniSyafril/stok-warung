@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble POS - Pro Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
+    <div class="max-w-md mx-auto min-h-screen bg-white shadow-2xl relative flex flex-col">
+        
+        <section id="loginPage" class="flex-grow flex items-center justify-center p-6">
+            <div class="w-full text-center">
+                <div class="bg-blue-600 w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-blue-200">
+                    <span class="text-white text-3xl font-black">B</span>
+                </div>
+                <h1 class="text-2xl font-black text-slate-800">Bubble POS</h1>
+                <p class="text-slate-400 text-sm">Sistem Kasir Warung Ice Bubble</p>
+                <div class="space-y-4 mt-8 text-left">
+                    <input id="email" type="email" placeholder="Email" class="w-full p-4 bg-slate-100 rounded-2xl input-focus border-none">
+                    <input id="password" type="password" placeholder="Password" class="w-full p-4 bg-slate-100 rounded-2xl input-focus border-none">
+                    <button id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition">Masuk</button>
+                    <p id="authMsg" class="text-red-500 text-xs text-center font-medium"></p>
+                </div>
+            </div>
+        </section>
+
+        <main id="mainContent" class="hidden flex-grow flex flex-col">
+            <header class="p-6 flex justify-between items-center border-b sticky top-0 bg-white/90 backdrop-blur-md z-40">
+                <div>
+                    <h2 class="font-black text-xl text-slate-800 tracking-tight">Warung Kita</h2>
+                    <p id="userDisplay" class="text-[10px] text-blue-500 font-bold uppercase tracking-tighter"></p>
+                </div>
+                <button id="btnLogout" class="p-2 bg-red-50 rounded-xl text-red-500 hover:bg-red-100 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                </button>
+            </header>
+
+            <div class="p-6 flex-grow overflow-y-auto pb-32">
+                <div id="pageStok" class="space-y-6">
+                    <div id="adminForm" class="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl">
+                        <h3 class="text-xs font-bold opacity-50 uppercase mb-4 tracking-widest">Tambah Item Baru</h3>
+                        <div class="space-y-3">
+                            <input id="prodName" type="text" placeholder="Nama Rasa" class="w-full bg-white/10 p-4 rounded-2xl outline-none text-sm focus:bg-white/20">
+                            <div class="grid grid-cols-2 gap-3">
+                                <input id="prodBuy" type="number" placeholder="Modal" class="w-full bg-white/10 p-4 rounded-2xl outline-none text-sm focus:bg-white/20">
+                                <input id="prodSell" type="number" placeholder="Jual" class="w-full bg-white/10 p-4 rounded-2xl outline-none text-sm focus:bg-white/20">
+                            </div>
+                            <input id="prodStock" type="number" placeholder="Stok Awal" class="w-full bg-white/10 p-4 rounded-2xl outline-none text-sm focus:bg-white/20">
+                            <button id="btnSave" class="w-full bg-blue-500 py-4 rounded-2xl font-bold shadow-lg shadow-blue-500/20 active:scale-95 transition">+ Simpan Barang</button>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <input id="searchInput" type="text" placeholder="Cari rasa bubuk..." class="w-full p-4 pl-12 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-400 shadow-inner">
+                        <span class="absolute left-4 top-4 text-slate-400">🔍</span>
+                    </div>
+
+                    <div id="inventoryList" class="space-y-3"></div>
+                </div>
+
+                <div id="pageLaporan" class="hidden space-y-6">
+                    <div class="bg-white p-4 rounded-3xl border shadow-sm">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-4 tracking-widest text-center">Tren Profit Hari Ini</p>
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-emerald-500 p-5 rounded-[2rem] text-white shadow-lg shadow-emerald-100">
+                            <p class="text-[10px] font-bold opacity-70 uppercase mb-1">Omzet</p>
+                            <h4 class="text-lg font-black">Rp <span id="statOmzet">0</span></h4>
+                        </div>
+                        <div class="bg-blue-600 p-5 rounded-[2rem] text-white shadow-lg shadow-blue-100">
+                            <p class="text-[10px] font-bold opacity-70 uppercase mb-1">Profit</p>
+                            <h4 class="text-lg font-black">Rp <span id="statProfit">0</span></h4>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl border overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b font-bold text-[10px] text-slate-400 uppercase">Riwayat Penjualan</div>
+                        <div id="transactionLog" class="divide-y divide-slate-50"></div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex p-4 justify-around z-50 rounded-t-[2rem] shadow-[0_-10px_25px_rgba(0,0,0,0.05)]">
+                <button id="navStok" class="nav-item text-blue-600">
+                    <span class="text-2xl">📦</span><span>Stok</span>
+                </button>
+                <button id="navLaporan" class="nav-item text-slate-400">
+                    <span class="text-2xl">📊</span><span>Laporan</span>
+                </button>
+            </nav>
+        </main>
+
+        <div id="receiptModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+            <div class="bg-white w-full max-w-xs rounded-[2.5rem] p-8 shadow-2xl text-center transform scale-95 transition-all">
+                <h3 class="font-black text-xl uppercase tracking-tighter">Bubble Station</h3>
+                <p class="text-[10px] text-slate-400 mb-4">Pesanan Berhasil!</p>
+                <div class="border-y border-dashed py-6 my-4 space-y-2">
+                    <div class="flex justify-between text-sm font-bold text-slate-700">
+                        <span id="resItemName">Rasa</span><span>1x</span>
+                    </div>
+                    <div class="flex justify-between text-xl font-black text-blue-600 pt-2">
+                        <span>Total</span><span id="resItemPrice">Rp 0</span>
+                    </div>
+                </div>
+                <p id="resTime" class="text-[9px] text-slate-300 italic mb-6"></p>
+                <button onclick="closeReceipt()" class="w-full bg-slate-100 py-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-200 transition">Selesai</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
